@@ -1,4 +1,4 @@
-function model = SVMTraining(images, labels)
+function model = SVMTrain(images, labels)
 
 
 % first we check if the problem is binary classification or multiclass

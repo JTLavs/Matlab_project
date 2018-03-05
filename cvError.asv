@@ -13,27 +13,18 @@
 function cvErr = cvError(trainingData, trainingLabels, kFolds, classifier)
     indices = crossvalind('KFold', size(trainingData,1), kFolds);
     
-  
-    cvErr = [];
+    cp = classperf(trainingLabels);
+    
     for i = 1:kFolds
-        testData = trainingData(indices == i);
-        testLabels = trainingLabels(indices == i);
-        
-        trainData = trainingData(indices ~= i);
-        trainLabels = trainingLabels(indices ~= i);
-        
-        classifier.train(trainData, trainLabels);
+        test = trainingData(indices == i);
+        train = trainingData(indices ~= i);
+        classifier.train(train, trainingLabels(indices ~= i));
         predictions = [];
-        for j = 1:size(testData,1)
-            newClass = classifier.test(testData(j,:))
+        for j = 1:size(test,1)
+            newClass = classifier.test(test(j,:))
             predictions = [predictions; newClass]
         end
-      
-        numCorrect = (testLabels == predictions);
-        numCorrect = size(numCorrect(numCorrect == 1),1);
-        cvErr = [cvErr; 1 - (numCorrect /size(testData,1))];
+        
         
     end
-    
-    cvErr = mean (cvErr);
 end

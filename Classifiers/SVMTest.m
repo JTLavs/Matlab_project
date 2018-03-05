@@ -1,4 +1,4 @@
-function prediction= SVMTesting(image,model)
+function prediction= SVMTest(image,model)
 
 if strcmp(model.type,'binary')
     

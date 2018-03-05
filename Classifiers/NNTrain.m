@@ -1,4 +1,4 @@
-function modelNN = NNtraining(images, labels)
+function modelNN = NNTrain(images, labels)
 
 modelNN.neighbours=images;
 modelNN.labels=labels;

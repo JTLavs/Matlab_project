@@ -1,4 +1,4 @@
-function prediction = NNTesting(testImage, modelNN)
+function prediction = NNTest(testImage, modelNN)
     closest = Inf;
     for x = 1:size(modelNN.neighbours,1)
          Ed = EuclideanDistance(modelNN.neighbours(x,:), testImage);
