@@ -17,7 +17,6 @@ nn = classifier(@NNTrain, @NNTest);
 
 
 
-
 %% Load training images
 [training_images, training_labels] = loadPedestrianDatabase(TRAINING_DATASET_PATH, 10);
 pedestrians = find(training_labels == 1);
@@ -62,6 +61,7 @@ others = find(test_labels == -1);
 test_images= [test_images(pedestrians,:); test_images(others,:)]; 
 test_labels= [test_labels(pedestrians); test_labels(others)];
 
+<<<<<<< HEAD
 %% Extract hog feature vectors for test images
 test_features = [];
 for i=1:size(test_images, 1)
@@ -79,3 +79,5 @@ end
 %Accuracy = sum(comparison)/length(comparison)
 %ErrRate = 1 - Accuracy
 cvErr
+ 
+err = getErrorRate(svm, test_images, test_labels)
