@@ -4,14 +4,17 @@ clear all
 %%
 %% Add path variables
 addpath ..\Data
+addpath ..\Classifiers
+addpath ..\SVM-KM
 %%
 %% Set up globals
 TRAINING_DATASET_PATH = 'pedestrian_train.cdataset';
 TEST_DATASET_PATH = 'pedestrian_test.cdataset';
 
-knn = classifier(@KNNTrain,  @KNNTest)
-svm = classifier(@SVMTrain, @SVMTest)
-nn = classifier(@NNTrain, @NNTest)
+knn = classifier(@KNNTrain,  @KNNTest);
+svm = classifier(@SVMTrain, @SVMTest);
+nn = classifier(@NNTrain, @NNTest);
+
 
 
 
@@ -24,6 +27,8 @@ training_images= [training_images(pedestrians,:); training_images(others,:)];
 training_labels = [training_labels(pedestrians,:); training_labels(others,:)];
 %% Setup masks for edge extraction
 training_features = [];
+
+cvErr = cvError(training_images, training_labels, 5, nn);
 
 maskA = ones(3);
 maskA(:,1) = maskA(:,1) -2;
@@ -39,15 +44,15 @@ for i=1:size(training_images, 1)
     %ImBrightness =  brightEnchance(Im,50);
     [ImEdEx, ImIhor, ImIver] =  edgeExtraction(Im,maskA, maskB);
     
-    hog = hog_feature_vector(ImIhor);
-    training_features = [training_features; hog]; 
+    hog = hog_feature_vector(Im);
+    training_features = [training_features; training_images(i,:)]; 
 end
 
 %% Train classifier models
 
-knn.train(training_features, training_labels)
-svm.train(training_features, training_labels)
-nn.train(training_features, training_labels)
+%knn.train(training_features, training_labels)
+%svm.train(training_features, training_labels)
+%nn.train(training_features, training_labels)
 
 %% Load test images
 [test_images, test_labels] = loadPedestrianDatabase(TEST_DATASET_PATH, 10);
@@ -58,16 +63,19 @@ test_images= [test_images(pedestrians,:); test_images(others,:)];
 test_labels= [test_labels(pedestrians); test_labels(others)];
 
 %% Extract hog feature vectors for test images
-test_features = []
+test_features = [];
 for i=1:size(test_images, 1)
 
    Im = reshape(test_images(i,:),160,96);
    [ImEdEx, ImIhor, ImIver] =  edgeExtraction(Im,maskA, maskB);
-   hog = hog_feature_vector(ImIhor);
+   hog = hog_feature_vector(Im);
    
-   test_features = [test_features; hog];
+   %test_features = [test_features; hog];
    % TODO: classify each test image here using hog vector
+   %classificationResult(i,:) = svm.test(test_images(i,:));
 end
 %%
-comparison = (test_labels==classificationResult);
-Accuracy = sum(comparison)/length(comparison)
+%comparison = (test_labels==classificationResult);
+%Accuracy = sum(comparison)/length(comparison)
+%ErrRate = 1 - Accuracy
+cvErr

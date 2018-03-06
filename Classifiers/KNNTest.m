@@ -7,7 +7,7 @@ function prediction = KNNTest( testImage, modelNN, K )
     [B,I] = sort(Ed, 'ascend');
     
     if nargin < 3
-        K = 11;
+        K = 3;
     end
     
     neighboursindexes = I(1:K);

@@ -23,7 +23,7 @@ for im=1:sampling:numberOfImages
     labels= [labels; label];
     
     imfile = fscanf(fp,'%s',1);
-    I=imread(imfile);
+    I=imread(strcat('../Data/', imfile));
     if size(I,3)>1
         I=rgb2gray(I);
    end
