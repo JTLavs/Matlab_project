@@ -20,6 +20,8 @@ nn = classifier(@NNTrain, @NNTest);
 pedestrians = find(training_labels == 1);
 others = find(training_labels == -1);
 
+##GHELO WORLD
+
 training_images= [training_images(pedestrians,:); training_images(others,:)];
 training_labels = [training_labels(pedestrians,:); training_labels(others,:)];
 
