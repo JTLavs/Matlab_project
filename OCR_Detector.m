@@ -1,10 +1,12 @@
 clear all
 close all
 addpath .\SVM-KM\
+addpath .\Classifiers\
 detectorModel = load('detectorModel.mat') ;
 
 %Open testing image and convert to gary scale
-I=imread('pedestrian/image_00000099.jpg');
+I=imread('Data\pedestrian/image_00000308.jpg');
+%I = rgb2gray(I);
 
 
 %For simplifying this task, we will assume we know that there are 5 rows of
@@ -27,54 +29,59 @@ pedCounter=0;
 predictedFullImage=[];
 BBs = [];
 %for each digit within the image, 
-for r=1:samplingX:size(I,1)
-    predictedRow=[];
+for sizeBox=53:50:150
+    samplingX = sizeBox;
+    samplingY = round(sizeBox * (5/3));
     
-    for c= 1:samplingY:size(I,2)
-        
-        if (c+samplingY-1 <= size(I,2)) && (r+samplingX-1 <= size(I,1))
-  
-        %we crop the digit
-        digitIm = I(r:r+samplingX-1, c:c+samplingY-1);
-        
-        % we convert it into doubles from 0 to 1 and invert them (rememebr that in the training set, the digitd were white on black background)
-        %digitIm = mat2gray(digitIm);
-        %digitIm = imcomplement(digitIm);
-        
-        %need to  invert image here
-        
-        %All training examples were 28x28. To have any chance, we need to
-        %resample them into a 28x28 imaGE
-        digitIm = imresize(digitIm,[160 96]);
-        
-        %We display teh individually segmented digits
-        %subplot(numberRows,numberColumns,digitCounter)
+    for r=1:samplingY:size(I,1)
+        predictedRow=[];
 
-        %digitIm = preprocessDigit(digitIm);
-        %we reshape the digit into a vector
-        
-        %digitVector = reshape(digitIm, 1, 15360);
-        
-        %error that x and xsup should have the same no of columns.
-        hog = hog_feature_vector(digitIm);
-        prediction =  KNNTesting(hog, detectorModel.model, 15);  
-        prediction
-        
-        if prediction == 1
-            pedCounter = pedCounter+1;
-            BB = [r c samplingX samplingY];
-            BBs = [BBs; BB];
+        for c= 1:samplingX:size(I,2)
+
+            if (c+samplingX-1 <= size(I,2)) && (r+samplingY-1 <= size(I,1))
+
+            %we crop the digit
+            digitIm = I(r:r+samplingY-1, c:c+samplingX-1);
+
+            % we convert it into doubles from 0 to 1 and invert them (rememebr that in the training set, the digitd were white on black background)
+            %digitIm = mat2gray(digitIm);
+            %digitIm = imcomplement(digitIm);
+
+            %need to  invert image here
+
+            %All training examples were 28x28. To have any chance, we need to
+            %resample them into a 28x28 imaGE
+            digitIm = imresize(digitIm,[160 96]);
+
+            %We display teh individually segmented digits
+            %subplot(numberRows,numberColumns,digitCounter)
+
+            %digitIm = preprocessDigit(digitIm);
+            %we reshape the digit into a vector
+
+            %digitVector = reshape(digitIm, 1, 15360);
+
+            %error that x and xsup should have the same no of columns.
+            hog = hog_feature_vector(digitIm);
+            prediction =  SVMTest(hog, detectorModel.svm.Model);  
+            prediction
+
+            if prediction == 1
+                pedCounter = pedCounter+1;
+                BB = [r c samplingY samplingX];
+                BBs = [BBs; BB];
+            end
+
+            %predictedRow=[predictedRow prediction];
+            end
         end
-        
-        %predictedRow=[predictedRow prediction];
+
+        %predictedFullImage=[predictedFullImage; predictedRow];
+        imshow(I), hold on
+
+        for k=1:size(BBs)
+            rectangle('Position', [BBs(k,2) BBs(k,1) BBs(k,4), BBs(k,3)])
         end
-    end
-    
-    %predictedFullImage=[predictedFullImage; predictedRow];
-    imshow(I), hold on
-    
-    for k=1:size(BBs)
-        rectangle('Position', [BBs(k,1) BBs(k,2) BBs(k,3), BBs(k,4)])
     end
 end
 

@@ -5,11 +5,12 @@ clear all
 %% Add path variables
 addpath Data
 addpath Classifiers
+addpath 'Feature Extraction'
 addpath SVM-KM
 %%
 %% Set up globals
-TRAINING_DATASET_PATH = '../Data/pedestrian_train.cdataset';
-TEST_DATASET_PATH = '../Data/pedestrian_test.cdataset';
+TRAINING_DATASET_PATH = 'Data/pedestrian_train.cdataset';
+TEST_DATASET_PATH = 'Data/pedestrian_test.cdataset';
 
 knn = classifier(@KNNTrain,  @KNNTest);
 svm = classifier(@SVMTrain, @SVMTest);
@@ -20,7 +21,6 @@ nn = classifier(@NNTrain, @NNTest);
 pedestrians = find(training_labels == 1);
 others = find(training_labels == -1);
 
-##GHELO WORLD
 
 training_images= [training_images(pedestrians,:); training_images(others,:)];
 training_labels = [training_labels(pedestrians,:); training_labels(others,:)];
@@ -61,9 +61,9 @@ images_knnCV = cvError(training_images, training_labels, 5, knn);
 
 %% Train classifier models
 
-knn.train(training_features, training_labels);
-svm.train(training_features, training_labels);
-nn.train(training_features, training_labels);
+knn.train(tr_hogIm, training_labels);
+svm.train(tr_hogIm, training_labels);
+nn.train(tr_hogIm, training_labels);
 
 
 %% Load test images
