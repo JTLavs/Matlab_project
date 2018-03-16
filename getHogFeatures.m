@@ -5,7 +5,9 @@ function [hogEdEx, hogHor, hogVer, hogIm] = getHogFeatures(images, maskA, maskB)
     hogHor = [];
     hogVer = [];
     for i=1:size(images, 1)
-        Im = reshape(images(i,:),160,96);
+        Im = reshape(images(i,:),160, 96);
+       
+       
         %ImBrightness =  brightEnchance(Im,50);
         [ImEdEx, ImIhor, ImIver] =  edgeExtraction(Im,maskA, maskB);
 

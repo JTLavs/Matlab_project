@@ -35,3 +35,4 @@ options = trainingOptions('sgdm',...
     'Plots','training-progress');
 
 net = trainNetwork(trainCNN, layers, options);
+save(net)
