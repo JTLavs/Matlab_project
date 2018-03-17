@@ -4,7 +4,7 @@ function [eigenVectors, eigenvalues, meanX, Xpca] = PrincipalComponentAnalysis (
 %ndim is a variable with the number of reduced PCA dimensions we want to obtain
 
 %calculate mean over the samples
-meanX = mean(X(1,:));
+meanX = mean(X, 1);
 A = X;
 A = A - repmat(meanX, 1, size(A(1))); 
 
