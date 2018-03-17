@@ -4,11 +4,12 @@ function [I] = getPedImgs()
 
 path = 'Data\pedestrian\';
 file = fullfile(path,'image*.jpg');
-d = dir(file);
+pedImgs = dir(file);
 
-for k=1:numel(d)
+%loop images in file
+for k=1:numel(pedImgs)
     
-    I=fullfile(path,d(k).name);
+    I=fullfile(path,pedImgs(k).name);
     imshow(I);
 end
 
