@@ -18,11 +18,20 @@ figure,subplot(4,4,1)
 imagesc(eig0) 
 colormap gray 
 for i = 1:15 
-subplot(4,4,i+1) 
-imagesc(reshape(eigenVectors(:,i),h,w)) 
+    subplot(4,4,i+1) 
+    imagesc(reshape(eigenVectors(:,i),h,w)) 
 end
 
 %%
 %animation for observing the variation of the first eigenvector
 %////////////////////// STEP 7 \\\\\\\\\\\\\\\\\\\\\\\\\\
+eigVector_index = 2;
+weights = [-3*sqrt(eigenvalues(eigVector_index)): 6*sqrt(eigenvalues(eigVector_index))/200: 3*sqrt(eigenvalues(eigVector_index))];
+figure
 
+for b=weights
+    faceReconstruct = meanX + b*eigenVectors(:,eigVector_index)';
+    faceReconstructImage = reshape(faceReconstruct,[h w]);
+    imagesc(faceReconstructImage), colormap(gray), axis equal, axis off,
+    drawnow
+end
