@@ -41,6 +41,7 @@ maskB(2,:) = maskB(2,:) -1;
 %% Extract hog feature vectors for training images
 [tr_hogEdEx, tr_hogHor, tr_hogVer, tr_hogIm] = getHogFeatures(training_images, maskA, maskB);
 
+showHog(tr_hogEdEx(1,:), [160 96]);
 %% Cross Validation
 
 edEx_nnCV = cvError(tr_hogEdEx, training_labels, 5, nn);

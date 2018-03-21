@@ -3,18 +3,17 @@ addpath .\SVM-KM\
 addpath .\Classifiers\
 addpath .\Data\
 load('detectorModel.mat') ;
-
+load('net.mat');
 
 %Open testing image and convert to gray scale
-I=imread('Data\pedestrian/image_00000308.jpg');
+I=imread('Data\pedestrian/image_00000011.jpg');
 
 I=double(I);
 %I = rgb2gray(I);
 
-
 %samplingX=round(size(I,1)/numberRows);
-windowWidth = round(96 * 0.6);
-windowHeight = round(160 * 0.6);
+windowWidth = round(96 * .5);
+windowHeight = round(160 * .5);
 %samplingY=round(size(I,2)/numberColumns);
 
 
@@ -57,19 +56,21 @@ for pyramid = 1:4
     end
     
     
-    for r=1:windowHeight:size(pyramidImage,1)
+    for r=1:windowHeight/3:size(pyramidImage,1)
         predictedRow=[];
         
-        for c= 1:windowWidth:size(pyramidImage,2)
+        for c= 1:windowWidth/3:size(pyramidImage,2)
             
             if (c+windowWidth-1 <= size(pyramidImage,2)) && (r+windowHeight-1 <= size(pyramidImage,1))
                 
                 %we crop the full image to the sliding window size
                 image = pyramidImage(r:r+windowHeight-1, c:c+windowWidth-1);
                 
+                imageHE = histeq(uint8(image), 255);
+                
                 % Resize to 160*96 because the training set images were this
                 % size
-                image = imresize(image,[160 96]);
+                image = imresize(imageHE,[160 96]);
                 
                 %extract edges
                 [ImEdEx, ImIhor, ImIver] =  edgeExtraction(image,maskA, maskB);
@@ -77,12 +78,13 @@ for pyramid = 1:4
                 % Get hog
                 hogEdEx = hog_feature_vector(ImEdEx);
                 
-                prediction =  detectorModel.knn.test(hogEdEx);
+                prediction =  classify(net, image);
                 
                 
-                if prediction == 1
+                if prediction(1) == 'pos'
                     pedCounter = pedCounter+1;
-                    BB = [r c windowHeight windowWidth];
+                    imshow(uint8(image))
+                    BB = [r * (2 .^ (pyramid -1)) c * (2 .^ (pyramid - 1)) windowHeight * (2 .^ (pyramid -1)) windowWidth * (2 .^ (pyramid -1))];
                     BBs = [BBs; BB];
                 end
                 
