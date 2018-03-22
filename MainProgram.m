@@ -1,4 +1,3 @@
-clear all
 %% ========================================================================
 %
 %                       config
@@ -7,19 +6,16 @@ clear all
 %% Load Trained Model
 %  This model contains trained classifiers for NN, KNN and SVM trained with
 %  HogEdEx - this is optional
-model = load('detectorModel.mat');
-model = model.detectorModel;
+model_small = load('detectorModel.mat');
+model_small = model_small.detectorModel;
 
 
 %% Setup masks for edge extraction
 
-maskA = ones(3);
-maskA(:,1) = maskA(:,1) -2;
-maskA(:,2) = maskA(:,2) -1;
+maskA = [1 , 0; 0 , -1];
 
-maskB = ones(3);
-maskB(1,:) = maskB(1,:) -2;
-maskB(2,:) = maskB(2,:) -1;
+maskB = [0, 1 ; -1, 0];
+
 %% ========================================================================
 %
 %                       training
@@ -73,28 +69,56 @@ knn = classifier(@KNNTrain,  @KNNTest);
 svm = classifier(@SVMTrain, @SVMTest);
 nn = classifier(@NNTrain, @NNTest);
 
-model = struct;
+model_small = struct;
 
 %% Train SVM
-model.svm = trainClassifier(svm, train_labels_small,...
+model_small.svm = trainClassifier(svm, train_labels_small,...
     HOG_train_small.hogEdEx,...
     HOG_train_small.hogHor,...
     HOG_train_small.hogVer,...
     HOG_train_small.hogIm);
 
 %% Train KNN
-model.knn = trainClassifier(knn, train_labels_small,...
+model_small.knn = trainClassifier(knn, train_labels_small,...
     HOG_train_small.hogEdEx,...
     HOG_train_small.hogHor,...
     HOG_train_small.hogVer,...
     HOG_train_small.hogIm);
 
 %% Train NN
-model.nn = trainClassifier(nn, train_labels_small,...
+model_small.nn = trainClassifier(nn, train_labels_small,...
     HOG_train_small.hogEdEx,...
     HOG_train_small.hogHor,...
     HOG_train_small.hogVer,...
     HOG_train_small.hogIm);
+
+%
+%
+%% TRAIN 1500
+%
+%
+%
+%% Train SVM
+model_large.svm = trainClassifier(svm, train_labels_small,...
+    HOG_train_full.hogEdEx,...
+    HOG_train_full.hogHor,...
+    HOG_train_full.hogVer,...
+    HOG_train_full.hogIm);
+
+%% Train KNN
+model_large.knn = trainClassifier(knn, train_labels_full,...
+    HOG_train_full.hogEdEx,...
+    HOG_train_full.hogHor,...
+    HOG_train_full.hogVer,...
+    HOG_train_full.hogIm);
+
+%% Train NN
+model_large.nn = trainClassifier(nn, train_labels_small,...
+    HOG_train_full.hogEdEx,...
+    HOG_train_full.hogHor,...
+    HOG_train_full.hogVer,...
+    HOG_train_full.hogIm);
+
 
 %% ========================================================================
 %
@@ -143,9 +167,9 @@ knnPredictions = [];
 svmPredictions = [];
 nnPredictions = [];
 for i=1:150
-    knnPredictions = [knnPredictions; model.knn.hogEdEx.test(HOG_test_small.hogEdEx(i, :))];
-    svmPredictions = [svmPredictions; model.svm.hogEdEx.test(HOG_test_small.hogEdEx(i, :))];
-    nnPredictions = [nnPredictions; model.nn.hogEdEx.test(HOG_test_small.hogEdEx(i, :))];
+    knnPredictions = [knnPredictions; model_small.knn.hogEdEx.test(HOG_test_small.hogEdEx(i, :))];
+    svmPredictions = [svmPredictions; model_small.svm.hogEdEx.test(HOG_test_small.hogEdEx(i, :))];
+    nnPredictions = [nnPredictions; model_small.nn.hogEdEx.test(HOG_test_small.hogEdEx(i, :))];
 end
 
 test_results.svm.hogEdEx.predictions = svmPredictions;
@@ -157,6 +181,30 @@ test_results.knn.hogEdEx.acc = size(test_results.knn.hogEdEx.predictions(test_re
 test_results.nn.hogEdEx.acc = size(test_results.nn.hogEdEx.predictions(test_results.nn.hogEdEx.predictions == test_labels_small),1) / size(test_labels_small,1);
 
 %% CV 150 Images with HOG EdEx
+test_results.knn.hogEdEx.cvAcc = 1 - cvError(HOG_train_small.hogEdEx, train_labels_small, 3, knn);
+test_results.svm.hogEdEx.cvAcc = 1 - cvError(HOG_train_small.hogEdEx, train_labels_small, 3, svm);
+test_results.nn.hogEdEx.cvAcc = 1 - cvError(HOG_train_small.hogEdEx, train_labels_small, 3, nn);
+
+
+%% TEST 1500 Images with HOG ED EX
+knnPredictions = [];
+svmPredictions = [];
+nnPredictions = [];
+for i=1:1500
+    knnPredictions = [knnPredictions; model_large.knn.hogEdEx.test(HOG_test_full.hogEdEx(i, :))];
+    %svmPredictions = [svmPredictions; model_large.svm.hogEdEx.test(HOG_test_full.hogEdEx(i, :))];
+    %nnPredictions = [nnPredictions; model_large.nn.hogEdEx.test(HOG_test_full.hogEdEx(i, :))];
+end
+
+%test_results.svm.hogEdEx.predictions = svmPredictions;
+%test_results.nn.hogEdEx.predictions = nnPredictions;
+test_results.knn.hogEdEx.predictions = knnPredictions;
+
+%test_results.svm.hogEdEx.acc = size(test_results.svm.hogEdEx.predictions(test_results.svm.hogEdEx.predictions == test_labels_full),1) / size(test_labels_full,1);
+test_results.knn.hogEdEx.acc = size(test_results.knn.hogEdEx.predictions(test_results.knn.hogEdEx.predictions == test_labels_full),1) / size(test_labels_full,1);
+%test_results.nn.hogEdEx.acc = size(test_results.nn.hogEdEx.predictions(test_results.nn.hogEdEx.predictions == test_labels_full),1) / size(test_labels_full,1);
+
+%% CV 1500 Images with HOG EdEx
 test_results.knn.hogEdEx.cvAcc = 1 - cvError(HOG_train_small.hogEdEx, train_labels_small, 3, knn);
 test_results.svm.hogEdEx.cvAcc = 1 - cvError(HOG_train_small.hogEdEx, train_labels_small, 3, svm);
 test_results.nn.hogEdEx.cvAcc = 1 - cvError(HOG_train_small.hogEdEx, train_labels_small, 3, nn);
@@ -181,3 +229,10 @@ plot(test_results.nn.roc.x, test_results.nn.roc.y);
 subplot(4,4,3)
 plot(test_results.knn.roc.x, test_results.knn.roc.y);
 
+
+%% Sliding Window
+peds = getPedImgs();
+SlidingWindow(peds(1, :), model_large.knn.hogEdEx);
+for i=1:size(peds,1)
+    
+end
