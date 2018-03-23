@@ -4,8 +4,6 @@ function img  = SlidingWindow(imagePath, classifier)
     addpath .\SVM-KM\
     addpath .\Classifiers\
     addpath .\Data\
-    load('detectorModel.mat') ;
-    load('net.mat');
 
     %Open testing image and convert to gray scale
     I=imread(imagePath);
