@@ -3,7 +3,6 @@
 %                       config
 %
 %  ========================================================================
-%% Load Trained Model
 %  This model contains trained classifiers for NN, KNN and SVM trained with
 %  HogEdEx - this is optional
 %% Setup masks for edge extraction
@@ -95,6 +94,7 @@ model_small.nn = trainClassifier(nn, train_labels_small,...
 %
 %
 %% Train SVM
+%USE SvmTrain to change kernel and C values
 model_large.svm = trainClassifier(svm, train_labels_small,...
     HOG_train_full.hogEdEx,...
     HOG_train_full.hogHor,...
@@ -159,6 +159,7 @@ HOG_test_small.hogIm = hogIm;
 
 
 %% TEST 150 Images with HOG ED EX
+%Use KNNTest to change K values
 knnPredictions = [];
 svmPredictions = [];
 nnPredictions = [];
@@ -227,8 +228,7 @@ plot(test_results.knn.roc.x, test_results.knn.roc.y);
 
 
 %% Sliding Window
+%Loads all the pedestrain images for the video
 peds = getPedImgs();
-SlidingWindow(peds(1, :), model_large.knn.hogEdEx);
-for i=1:size(peds,1)
-    
-end
+%Pass in model you want to use along with index of image in peds array.
+SlidingWindow(peds(1, :), model_small.svm.hogEdEx);
