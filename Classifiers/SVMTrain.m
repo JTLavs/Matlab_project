@@ -11,7 +11,7 @@ if max(labels)<2
 
     %Initilaise and setup SVM parameters
      lambda = 1e-20;  
-     C = Inf;
+     C = 100000;
      sigmakernel=15;
      K=svmkernel(images,'gaussian',sigmakernel);
      kerneloption.matrix=K;

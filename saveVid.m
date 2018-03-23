@@ -1,13 +1,13 @@
 function [vidObj] = saveVid()
 
-vidObj = VideoWriter('peds.avi');
+vidObj = VideoWriter('newVid.avi');
 %set frame rate - normally 30 but 7.5 to slow vid
 vidObj.FrameRate = 7.5;
 
 %open vid object
 open(vidObj);
 
-path = 'Data\pedestrian\';
+path = 'Data\videoFrames_final\';
 file = fullfile(path,'image*.jpg');
 pedImgs = dir(file);
 pedImgs = {pedImgs.name};

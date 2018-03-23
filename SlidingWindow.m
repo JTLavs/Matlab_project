@@ -75,18 +75,21 @@ function img  = SlidingWindow(imagePath, classifier)
                     % size
                     image = imresize(image,[160 96]);
 
+              
                     %extract edges
                     [ImEdEx, ImIhor, ImIver] =  edgeExtraction(image,maskA, maskB);
 
                     % Get hog
                     hogEdEx = hog_feature_vector(ImEdEx);
 
+                   
                     prediction =  classifier.test(hogEdEx);
 
-
+                    
                     if prediction == 1
                         pedCounter = pedCounter+1;
-            
+                        
+                        
                         BB = [r * (2 .^ (pyramid -1)) c * (2 .^ (pyramid - 1)) windowHeight * (2 .^ (pyramid -1)) windowWidth * (2 .^ (pyramid -1))];
                         BBs = [BBs; BB];
                     end
@@ -109,8 +112,8 @@ function img  = SlidingWindow(imagePath, classifier)
         rectangle('Position', [BBs(k,2) BBs(k,1) BBs(k,4), BBs(k,3)])
     end
 
-    save_path = replace(imagePath, 'pedestrian','boundingBoxes');
-    imwrite(uint8(I), savePath);
+    save_path = replace(imagePath, 'pedestrian','videoFrames_final');
+    export_fig(save_path);
 
 end
 
