@@ -1,8 +1,8 @@
 %% ========================================================================
 %Add paths
-addpath '.\Classifiers'
-addpath '.\Data'
-addpath '.\SVM-KM'
+addpath .\Classifiers
+addpath .\Data
+addpath .\SVM-KM
 addpath '.\Feature Extraction'
 %  ========================================================================
 %  This model contains trained classifiers for NN, KNN and SVM trained with
@@ -11,6 +11,14 @@ addpath '.\Feature Extraction'
 
 maskA = [1 , 0; 0 , -1];
 maskB = [0, 1 ; -1, 0];
+
+%maskA = ones(3);
+%maskA(:,1) = maskA(:,1) - 2;
+%maskA(:,2) = maskA(:,2) - 1;
+
+%maskB = ones(3);
+%maskB(:,1) = maskB(:,1) - 2;
+%maskB(:,2) = maskB(:,2) - 1;
 
 %% ========================================================================
 %
