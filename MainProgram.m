@@ -6,10 +6,6 @@
 %% Load Trained Model
 %  This model contains trained classifiers for NN, KNN and SVM trained with
 %  HogEdEx - this is optional
-model_small = load('detectorModel.mat');
-model_small = model_small.detectorModel;
-
-
 %% Setup masks for edge extraction
 
 maskA = [1 , 0; 0 , -1];
