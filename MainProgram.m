@@ -1,14 +1,15 @@
 %% ========================================================================
-%
-%                       config
-%
+%Add paths
+addpath '.\Classifiers'
+addpath '.\Data'
+addpath '.\SVM-KM'
+addpath '.\Feature Extraction'
 %  ========================================================================
 %  This model contains trained classifiers for NN, KNN and SVM trained with
 %  HogEdEx - this is optional
-%% Setup masks for edge extraction
+%% Setup masks for edge extraction, we tried two masks.
 
 maskA = [1 , 0; 0 , -1];
-
 maskB = [0, 1 ; -1, 0];
 
 %% ========================================================================
@@ -16,8 +17,8 @@ maskB = [0, 1 ; -1, 0];
 %                       training
 %
 %  ========================================================================
-%  Here you will find sections to load the training set at sampling rate 10
-%  or 1.
+%  Here you will find sections to load the training set at sampling rate 10 (150 imgs)
+%  or 1 (1500 imgs).
 
 %% Load Train Data - 1500 entries
 % Preferred method is to load in training data and train the classifiers
@@ -202,9 +203,9 @@ test_results.knn.hogEdEx.acc = size(test_results.knn.hogEdEx.predictions(test_re
 %test_results.nn.hogEdEx.acc = size(test_results.nn.hogEdEx.predictions(test_results.nn.hogEdEx.predictions == test_labels_full),1) / size(test_labels_full,1);
 
 %% CV 1500 Images with HOG EdEx
-test_results.knn.hogEdEx.cvAcc = 1 - cvError(HOG_train_small.hogEdEx, train_labels_small, 3, knn);
-test_results.svm.hogEdEx.cvAcc = 1 - cvError(HOG_train_small.hogEdEx, train_labels_small, 3, svm);
-test_results.nn.hogEdEx.cvAcc = 1 - cvError(HOG_train_small.hogEdEx, train_labels_small, 3, nn);
+test_results.knn.hogEdEx.cvAcc = 1 - cvError(HOG_train_full.hogEdEx, train_labels_full, 3, knn);
+test_results.svm.hogEdEx.cvAcc = 1 - cvError(HOG_train_full.hogEdEx, train_labels_full, 3, svm);
+test_results.nn.hogEdEx.cvAcc = 1 - cvError(HOG_train_full.hogEdEx, train_labels_full, 3, nn);
 %% Get ROC curves
 [x,y] = perfcurve(test_labels_small, test_results.svm.predictions, 1);
 test_results.svm.roc.x = x;
@@ -218,6 +219,7 @@ test_results.nn.roc.y = y;
 test_results.knn.roc.x = x;
 test_results.knn.roc.y = y;
 
+%%show curves
 figure
 subplot(4,4,1)
 plot(test_results.svm.roc.x, test_results.svm.roc.y);
